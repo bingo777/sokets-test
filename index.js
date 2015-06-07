@@ -3,8 +3,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var players = {};
 var colors = ['red', 'green', 'blue', 'black', 'orange'];
-var updateInterval = 50;
-var speed = 10;
+var UPDATE_INTERVAL = 50;
+var SPEED = 10;
+var RIGHT_BORDER = 800;
+var BOTTOM_BORDER = 600;
 
 app.get('/', function (req, res) {
   res.sendfile('index.html');
@@ -43,22 +45,24 @@ function startGame() {
         player = players[player];
         switch (player.direction) {
           case 'up':
-            player.y -= speed;
+            player.y -= SPEED;
             break;
           case 'down':
-            player.y += speed;
+            player.y += SPEED;
             break;
           case 'left':
-            player.x -= speed;
+            player.x -= SPEED;
             break;
           case 'right':
-            player.x += speed;
+            player.x += SPEED;
             break;
         }
+
+        checkBorders(player);
       }
     }
     io.emit('update', players);
-  }, updateInterval);
+  }, UPDATE_INTERVAL);
 }
 
 function updatePosition(socket, direction) {
@@ -66,8 +70,23 @@ function updatePosition(socket, direction) {
   player.direction = direction;
 }
 
-function removePlayer (socket) {
+function removePlayer(socket) {
   var color = socket.color;
   delete players[color];
   colors.push(color);
+}
+
+function checkBorders(player) {
+  if (player.x < 0) {
+    player.x = 0;
+  }
+  if (player.x + 50 > RIGHT_BORDER) {
+    player.x = RIGHT_BORDER - 50;
+  }
+  if (player.y < 0) {
+    player.y = 0;
+  }
+  if (player.y + 50 > BOTTOM_BORDER) {
+    player.y = BOTTOM_BORDER - 50;
+  }
 }
