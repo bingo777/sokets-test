@@ -22,11 +22,15 @@ socket.on('initialize', function (data) {
 function startGame() {
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
+  window.addEventListener('blur', onLostFocus, false);
+  window.addEventListener('contextmenu', onLostFocus, false);
 }
 
 function endGame() {
   document.removeEventListener('keydown', onKeyDown, false);
   document.removeEventListener('keyup', onKeyUp, false);
+  window.removeEventListener('blur', onLostFocus, false);
+  window.removeEventListener('contextmenu', onLostFocus, false);
 }
 
 function onKeyDown(e) {
@@ -35,11 +39,10 @@ function onKeyDown(e) {
       keysCurrentlyDown.push(KEYS_MAP[e.keyCode]);
       changeDirection();
     }
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
   }
-
-  e.stopPropagation();
-  e.preventDefault();
-  return false;
 }
 
 function onKeyUp(e) {
@@ -49,15 +52,20 @@ function onKeyUp(e) {
     if (positionToDelete !== -1) {
       keysCurrentlyDown.splice(positionToDelete, 1);
     }
-  }
 
-  if (!keysCurrentlyDown.length || (keysCurrentlyDown.length && keysCurrentlyDown[keysCurrentlyDown.length - 1] !== currentDirection)) {
-    changeDirection();
-  }
+    if (!keysCurrentlyDown.length || (keysCurrentlyDown.length && keysCurrentlyDown[keysCurrentlyDown.length - 1] !== currentDirection)) {
+      changeDirection();
+    }
 
-  e.stopPropagation();
-  e.preventDefault();
-  return false;
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
+  }
+}
+
+function onLostFocus(e) {
+  keysCurrentlyDown = [];
+  changeDirection();
 }
 
 function changeDirection() {
@@ -70,7 +78,6 @@ function changeDirection() {
 }
 
 function sendDirectionToServer() {
-  console.log('sent!!!111');
   socket.emit('playerMove', currentDirection);
 }
 

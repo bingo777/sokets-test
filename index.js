@@ -3,6 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var players = {};
 var colors = ['red', 'green', 'blue', 'black', 'orange'];
+
 var UPDATE_INTERVAL = 50;
 var SPEED = 10;
 var RIGHT_BORDER = 800;
