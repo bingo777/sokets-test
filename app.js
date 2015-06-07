@@ -1,9 +1,14 @@
 var socket = io();
 
-var arrowUpIsDown = false;
-var arrowDownIsDown = false;
-var arrowLeftIsDown = false;
-var arrowRightIsDown = false;
+var currentDirection = 'none';
+var keysCurrentlyDown = [];
+
+var KEYS_MAP = {
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down'
+};
 
 socket.on('update', function (data) {
   drawScreen(data);
@@ -25,52 +30,48 @@ function endGame() {
 }
 
 function onKeyDown(e) {
-  switch (e.keyCode) {
-    case 38:
-      if (!arrowUpIsDown) {
-        socket.emit('playerMove', 'up');
-        arrowUpIsDown = true;
-      }
-      break;
-    case 40:
-      if (!arrowDownIsDown) {
-        socket.emit('playerMove', 'down');
-        arrowDownIsDown = true;
-      }
-      break;
-    case 37:
-      if (!arrowLeftIsDown) {
-        socket.emit('playerMove', 'left');
-        arrowLeftIsDown = true;
-      }
-      break;
-    case 39:
-      if (!arrowRightIsDown) {
-        socket.emit('playerMove', 'right');
-        arrowRightIsDown = true;
-      }
-      break;
+  if (KEYS_MAP[e.keyCode]) {
+    if (keysCurrentlyDown.indexOf(KEYS_MAP[e.keyCode]) === -1) {
+      keysCurrentlyDown.push(KEYS_MAP[e.keyCode]);
+      changeDirection();
+    }
   }
+
+  e.stopPropagation();
+  e.preventDefault();
+  return false;
 }
 
 function onKeyUp(e) {
-  switch (e.keyCode) {
-    case 38:
-      arrowUpIsDown = false;
-      break;
-    case 40:
-      arrowDownIsDown = false;
-      break;
-    case 37:
-      arrowLeftIsDown = false;
-      break;
-    case 39:
-      arrowRightIsDown = false;
-      break;
+  var positionToDelete;
+  if (KEYS_MAP[e.keyCode]) {
+    positionToDelete = keysCurrentlyDown.indexOf(KEYS_MAP[e.keyCode]);
+    if (positionToDelete !== -1) {
+      keysCurrentlyDown.splice(positionToDelete, 1);
+    }
   }
-  if (!arrowUpIsDown && !arrowDownIsDown && !arrowLeftIsDown && !arrowRightIsDown) {
-    socket.emit('playerMove', 'none');
+
+  if (!keysCurrentlyDown.length || (keysCurrentlyDown.length && keysCurrentlyDown[keysCurrentlyDown.length - 1] !== currentDirection)) {
+    changeDirection();
   }
+
+  e.stopPropagation();
+  e.preventDefault();
+  return false;
+}
+
+function changeDirection() {
+  if (keysCurrentlyDown.length) {
+    currentDirection = keysCurrentlyDown[keysCurrentlyDown.length - 1];
+  } else {
+    currentDirection = 'none';
+  }
+  sendDirectionToServer();
+}
+
+function sendDirectionToServer() {
+  console.log('sent!!!111');
+  socket.emit('playerMove', currentDirection);
 }
 
 function drawScreen(players) {
