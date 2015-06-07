@@ -27,6 +27,9 @@ io.on('connection', function (socket) {
   socket.on('playerMove', function (dirrection) {
     updatePosition(socket, dirrection);
   });
+  socket.on('disconnect', function () {
+    removePlayer(socket);
+  });
 });
 
 http.listen(3000, function () {
@@ -61,4 +64,10 @@ function startGame() {
 function updatePosition(socket, direction) {
   var player = players[socket.color];
   player.direction = direction;
+}
+
+function removePlayer (socket) {
+  var color = socket.color;
+  delete players[color];
+  colors.push(color);
 }
