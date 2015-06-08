@@ -18,6 +18,8 @@ app.get('/app.js', function (req, res) {
 });
 
 io.on('connection', function (socket) {
+  console.log('connected from: ' + socket.request.connection.remoteAddress);
+
   var playerColor = colors.pop();
   players[playerColor] = {
     x: 0,
@@ -31,6 +33,7 @@ io.on('connection', function (socket) {
     updatePosition(socket, dirrection);
   });
   socket.on('disconnect', function () {
+    console.log('disconnected from: ' + socket.request.connection.remoteAddress);
     removePlayer(socket);
   });
 });
