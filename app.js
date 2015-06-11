@@ -82,17 +82,14 @@ function sendDirectionToServer() {
 }
 
 function drawScreen(players) {
-  document.body.innerHTML = '';
+  var canvas = document.getElementById('canvas').getContext("2d");
+  canvas.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
 
   for (var player in players) {
     if (players.hasOwnProperty(player)) {
       player = players[player];
-      var playerDiv = document.createElement('div');
-      playerDiv.style.backgroundColor = player.color;
-      playerDiv.style.left = player.x + 'px';
-      playerDiv.style.top = player.y + 'px';
-      playerDiv.className = 'player';
-      document.body.appendChild(playerDiv);
+      canvas.fillStyle = player.color;
+      canvas.fillRect(player.x, player.y, 50, 50);
     }
   }
 }
