@@ -6,9 +6,11 @@ var players = {};
 var colors = ['red', 'green', 'blue', 'black', 'orange'];
 
 var UPDATE_INTERVAL = 50;
-var SPEED = 10;
+var SPEED = 5;
 var RIGHT_BORDER = 800;
 var BOTTOM_BORDER = 600;
+var PLAYER_WIDTH = 17;
+var PLAYER_HEIGHT = 20;
 
 app.use(express.static('web'));
 
@@ -79,13 +81,13 @@ function checkBorders(player) {
   if (player.x < 0) {
     player.x = 0;
   }
-  if (player.x + 50 > RIGHT_BORDER) {
-    player.x = RIGHT_BORDER - 50;
+  if (player.x + PLAYER_WIDTH > RIGHT_BORDER) {
+    player.x = RIGHT_BORDER - PLAYER_WIDTH;
   }
   if (player.y < 0) {
     player.y = 0;
   }
-  if (player.y + 50 > BOTTOM_BORDER) {
-    player.y = BOTTOM_BORDER - 50;
+  if (player.y + PLAYER_HEIGHT > BOTTOM_BORDER) {
+    player.y = BOTTOM_BORDER - PLAYER_HEIGHT;
   }
 }

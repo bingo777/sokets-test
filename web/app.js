@@ -3,6 +3,11 @@ var socket = io();
 var currentDirection = 'none';
 var keysCurrentlyDown = [];
 
+var canvas = document.getElementById('canvas').getContext("2d");
+var sprite = new Image();
+var background = new Image();
+var pattern;
+
 var KEYS_MAP = {
   37: 'left',
   38: 'up',
@@ -82,14 +87,20 @@ function sendDirectionToServer() {
 }
 
 function drawScreen(players) {
-  var canvas = document.getElementById('canvas').getContext("2d");
-  canvas.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, canvas.canvas.width, canvas.canvas.height);
 
   for (var player in players) {
     if (players.hasOwnProperty(player)) {
       player = players[player];
-      canvas.fillStyle = player.color;
-      canvas.fillRect(player.x, player.y, 50, 50);
+      canvas.drawImage(sprite, 10, 3, 17, 20, player.x, player.y, 17, 20);
     }
   }
 }
+
+sprite.src = '/images/sprites.gif';
+background.src = '/images/grass.png';
+
+background.onload = function () {
+  pattern = canvas.createPattern(background, 'repeat');
+};
