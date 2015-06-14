@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var players = {};
@@ -9,13 +10,7 @@ var SPEED = 10;
 var RIGHT_BORDER = 800;
 var BOTTOM_BORDER = 600;
 
-app.get('/', function (req, res) {
-  res.sendfile('index.html');
-});
-
-app.get('/app.js', function (req, res) {
-  res.sendfile('app.js');
-});
+app.use(express.static('web'));
 
 io.on('connection', function (socket) {
   console.log('connected from: ' + socket.request.connection.remoteAddress);
